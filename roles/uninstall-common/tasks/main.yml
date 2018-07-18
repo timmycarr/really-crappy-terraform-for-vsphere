@@ -1,0 +1,16 @@
+---
+- name: remove baseline dependencies
+  become: yes
+  yum:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - yum-utils
+      - python2-pip
+      - python-requests
+      - ebtables
+      -  socat
+      - ntp
+      - jq
+      - nfs-utils

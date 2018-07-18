@@ -1,0 +1,35 @@
+- hosts: all
+  gather_facts: false
+  become: yes
+  pre_tasks:
+  - name: install python
+    raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python python-pip)"
+    register: output
+    changed_when: output.stdout != ""
+
+- hosts: etcd
+  roles:
+#  - setup-etcd-hostvars
+#  - install-etcd
+
+- hosts: masters
+  roles:
+  - install-common
+#  - install-docker
+#  - install-kubernetes-binaries
+#  - install-kubernetes-master
+
+- hosts: nodes
+  roles:
+  - install-common
+#  - install-docker
+#  - install-kubernetes-binaries
+#  - install-kubernetes-node
+
+- hosts: masters
+  roles:
+#  - install-calico
+
+- hosts: localhost
+  roles:
+#  - get-admin-kube-conf

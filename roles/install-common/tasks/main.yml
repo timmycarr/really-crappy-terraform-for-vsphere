@@ -1,0 +1,26 @@
+---
+- name: add epel repo
+  yum:
+    name: "{{ common_redhat_epel_rpm }}"
+
+- name: perform a yum update
+  yum:
+    name: '*'
+    state: latest
+
+- name: install baseline dependencies
+  become: yes
+  yum:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: true
+  vars:
+    packages:
+      - yum-utils
+      - python2-pip
+      - python-requests
+      - ebtables
+      -  socat
+      - ntp
+      - jq
+      - nfs-utils
