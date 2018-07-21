@@ -15,14 +15,14 @@
 - hosts: masters
   roles:
   - install-common
-#  - install-docker
+  - install-docker
 #  - install-kubernetes-binaries
 #  - install-kubernetes-master
 
 - hosts: nodes
   roles:
   - install-common
-#  - install-docker
+  - install-docker
 #  - install-kubernetes-binaries
 #  - install-kubernetes-node
 
