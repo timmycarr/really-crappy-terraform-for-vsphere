@@ -10,15 +10,16 @@
 - hosts: nodes
   roles:
   - uninstall-common
-#  - uninstall-kubernetes-binaries
+  - uninstall-kubernetes-binaries
+  - uninstall-docker
 
 - hosts: masters
   roles:
-#  - uninstall-kubernetes-master
-# - uninstall-kubernetes-binaries
-#  - uninstall-docker
+  - uninstall-kubernetes-master
+  - uninstall-kubernetes-binaries
+  - uninstall-docker
   - uninstall-common
 
 - hosts: etcd
   roles:
-#  - uninstall-etcd
+  - uninstall-etcd

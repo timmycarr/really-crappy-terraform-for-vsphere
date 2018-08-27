@@ -9,26 +9,24 @@
 
 - hosts: etcd
   roles:
-#  - setup-etcd-hostvars
-#  - install-etcd
+  - install-common
+  - setup-etcd-hostvars
+  - install-etcd
+  
 
 - hosts: masters
   roles:
   - install-common
   - install-docker
-#  - install-kubernetes-binaries
-#  - install-kubernetes-master
+  - install-kubernetes-binaries
+  - install-kubernetes-master
 
 - hosts: nodes
   roles:
   - install-common
   - install-docker
-#  - install-kubernetes-binaries
+  - install-kubernetes-binaries
 #  - install-kubernetes-node
-
-- hosts: masters
-  roles:
-#  - install-calico
 
 - hosts: localhost
   roles:

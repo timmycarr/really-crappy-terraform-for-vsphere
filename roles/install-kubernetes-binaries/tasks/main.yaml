@@ -1,0 +1,44 @@
+---
+# This task disables swap for Kubernetes node (see https://github.com/kubernetes/kubernetes/pull/31996)
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Add kubernetes repo
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes repo
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+
+- name: install kubernetes packages
+  become: yes
+  yum:
+    name: "{{ item }}"
+  with_items:
+  - "kubelet-{{ kubernetes.version }}"
+  - "kubeadm-{{ kubernetes.version }}"
+  - "kubectl-{{ kubernetes.version }}"
+  - "kubernetes-cni-{{ kubernetes.cni.version }}"
+
+- name: replace the cluster-dns entry in kubelet config
+  become: yes
+  replace:
+    path: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
+    regexp: "--cluster-dns=10\\.96\\.0\\.10"
+    replace: "--cluster-dns={{ kubernetes.dnsServiceIP }}"
+
+- name: ensure that the kubelet is running
+  become: yes
+  systemd:
+    name: kubelet
+    state: started
+    daemon_reload: true
+    enabled: true

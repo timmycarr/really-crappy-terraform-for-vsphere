@@ -1,0 +1,43 @@
+---
+- name: check to see if the kubeadm binary exists
+  become: yes
+  stat:
+    path: /usr/bin/kubeadm
+  register: kubeadm_binary
+
+- name: reset kubeadm
+  become: yes
+  shell: "kubeadm reset --force"
+  when: kubeadm_binary.stat.exists
+
+#- name: disable and stop kubelet
+#  become: yes
+#  systemd:
+#    name: kubelet
+#    state: stopped
+#    enabled: False
+
+- name: uninstall kubernetes packages
+  become: yes
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+  - kubelet
+  - kubeadm
+  - kubectl
+  - kubernetes-cni
+
+- name: cleanup any unused directories and files
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - /etc/kubernetes
+
+- name: remove the kubernetes yum repo
+  become: yes
+  yum_repository:
+    name: kubernetes
+    state: absent

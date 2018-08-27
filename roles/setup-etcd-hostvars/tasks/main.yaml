@@ -1,0 +1,5 @@
+---
+- name: register etcd endpoints fact
+  become: yes
+  set_fact:
+    etcd_client_endpoints: "{{ etcd_client_endpoints }}"

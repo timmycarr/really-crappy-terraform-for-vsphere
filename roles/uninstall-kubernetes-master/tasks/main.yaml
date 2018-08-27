@@ -1,0 +1,15 @@
+---
+- name: check to see if the kubeadm binary exists
+  become: yes
+  stat:
+    path: /usr/bin/kubeadm
+  register: kubeadm_binary
+
+- name: cleanup any unused directories and files
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - /etc/kubernetes
+  - /root/.kube/config

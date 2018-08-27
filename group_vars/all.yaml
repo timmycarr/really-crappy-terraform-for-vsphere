@@ -1,0 +1,23 @@
+kubernetes:
+  apiLoadBalancer:
+    ip: "192.168.10.17"
+  cni:
+    version: "0.6.0"
+  dnsServiceIP: "192.168.10.16"
+  podCIDR: "10.200.0.0/16"
+  serviceCIDR: "192.168.10.0/24"
+  version: "1.11.2"
+calico:
+  rbacInstallUrl: "https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml"
+  deploymentInstallUrl: "https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml"
+docker:
+  version: "17.03.2~ce-0~ubuntu-xenial"
+etcd:
+  cluster_token: 444fddcc-beae-45bc-9da6-d941d446b595
+  interface: ens192
+  version: v3.3.9
+kubeadm:
+  version: v1.11.2
+  token:
+    value: "ee99fa.4fd6d8638c0e21bd"
+    ttl: "0"

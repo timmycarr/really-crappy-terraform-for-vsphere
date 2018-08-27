@@ -1,0 +1,3 @@
+---
+kubeadm_release_url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubeadm.version }}/bin/linux/amd64/kubeadm"
+etcd_release_url: "https://github.com/coreos/etcd/releases/download/{{ etcd.version }}/etcd-{{ etcd.version }}-linux-amd64.tar.gz"

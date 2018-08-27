@@ -1,0 +1,109 @@
+---
+- name: determine whether kubeadm needs to be run
+  become: yes
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: kubeadm_apiserver_manifest
+
+- name: create kubernetes pki directory
+  become: yes
+  file:
+    dest: /etc/kubernetes/pki/etcd
+    state: directory
+    owner: root
+    group: root
+
+- name: slurp the etcd pki assets destined for the masters
+  become: yes
+  slurp: src=/etc/kubernetes/pki/{{ item }}
+  with_items:
+  - apiserver-etcd-client.crt
+  - apiserver-etcd-client.key
+  - etcd/ca.crt
+  - etcd/ca.key
+  register: etcd_ca_pki
+  delegate_to: "{{ groups['etcd'] | first }}"
+  run_once: true
+
+- name: add etcd pki assets
+  become: yes
+  no_log: True
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ etcd_ca_pki.results }}"
+
+- name: drop kubeadm template
+  become: yes
+  run_once: True
+  delegate_to: "{{ groups['masters'] | first }}"
+  template:
+    src: etc/kubernetes/kubeadm.conf
+    dest: /etc/kubernetes/kubeadm.conf
+  when: kubeadm_apiserver_manifest.stat.exists == False
+
+- name: ensure that the kubelet is running
+  become: yes
+  systemd:
+    name: kubelet
+    state: started
+    daemon_reload: true
+    enabled: true
+
+- name: run kubeadm init on primary master
+  become: yes
+  shell: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --ignore-preflight-errors=all"
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  when: kubeadm_apiserver_manifest.stat.exists == False
+
+- name: slurp the ca certificate and key
+  become: yes
+  slurp: src=/etc/kubernetes/{{ item }}
+  with_items:
+    - kubeadm.conf
+    - pki/ca.crt
+    - pki/ca.key
+    - pki/sa.key
+    - pki/sa.pub
+  register: kube_pki
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+
+- name: add kube pki assets
+  become: yes
+  no_log: True
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ kube_pki.results }}"
+  when: inventory_hostname != groups['masters'] | first
+
+- name: initialize secondary masters
+  become: yes
+  command: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --skip-preflight-checks"
+  when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['masters'] | first
+
+- name: create kubernetes config directory
+  become: yes
+  file:
+    dest: "/root/.kube/"
+    state: directory
+    mode: 0600
+
+- name: copy kubernetes config to home directory
+  become: yes
+  command: "cp /etc/kubernetes/admin.conf /root/.kube/config"
+
+- name: set config permissions
+  become: yes
+  file:
+    dest: "/root/.kube/config"
+    mode: 0600
+    state: file
