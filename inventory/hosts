@@ -1,13 +1,13 @@
 [etcd]
-192.168.10.23
-192.168.10.24
-192.168.10.25
+kube3.lab.timcarr.net
+kube4.lab.timcarr.net
+kube5.lab.timcarr.net
 
 [masters]
-192.168.10.20
-192.168.10.21
-192.168.10.22
+kube0.lab.timcarr.net
+kube1.lab.timcarr.net
+kube2.lab.timcarr.net
 
 [nodes]
-192.168.10.26
-192.168.10.27
+kube6.lab.timcarr.net
+kube7.lab.timcarr.net

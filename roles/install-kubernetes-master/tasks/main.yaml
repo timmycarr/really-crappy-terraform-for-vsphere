@@ -87,7 +87,7 @@
 
 - name: initialize secondary masters
   become: yes
-  command: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --skip-preflight-checks"
+  command: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --ignore-preflight-errors=all"
   when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['masters'] | first
 
 - name: create kubernetes config directory

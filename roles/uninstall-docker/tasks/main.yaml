@@ -13,6 +13,18 @@
     name: docker-ce
     state: absent
 
+- name: uninstall docker ce selinux
+  become: yes
+  yum:
+    name: docker-ce-selinux
+    state: absent
+
+- name: uninstall docker-selinux
+  become: yes
+  yum:
+    name: docker-selinux
+    state: absent
+
 - name: check to see if pip is already installed
   become: yes
   command: "pip --version"
@@ -36,6 +48,7 @@
   with_items:
   - /etc/docker
   - /etc/systemd/system/docker.service.d
+  - /var/lib/docker
 
 
 

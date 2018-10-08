@@ -26,7 +26,11 @@
   - install-common
   - install-docker
   - install-kubernetes-binaries
-#  - install-kubernetes-node
+  - install-kubernetes-node
+
+- hosts: masters
+  roles:
+  - install-calico
 
 - hosts: localhost
   roles:
