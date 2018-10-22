@@ -3,7 +3,7 @@ kubernetes:
     ip: "192.168.10.17"
   cni:
     version: "0.6.0"
-  dnsServiceIP: "192.168.10.16"
+  dnsServiceIP: "10.201.0.10"
   podCIDR: "10.200.0.0/16"
   serviceCIDR: "10.201.0.0/16"
   version: "1.11.3"
